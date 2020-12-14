@@ -1,110 +1,181 @@
-*{
+* {
     box-sizing: border-box;
 }
-body{
+
+body {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;  
-    transition-property:background-color color;
+    margin: 0;
+    transition-property: background-color color;
     transition-duration: 1s;
     color: #020202;
-    
+
 }
-body.dark{
+
+body.dark {
     background-color: black;
     color: antiquewhite;
 }
-.btn{
+
+.btn {
     border: none;
     padding: 10px;
     outline: none;
     border-radius: 15px;
+    background: transparent;
 }
-.btn:hover{
+
+.btn:hover {
     scale: 1.089;
 }
-.date{
+
+.date {
     display: flex;
     justify-content: center;
     align-self: center;
     font-size: 2em;
+    /* color: #f5f5f5;
+
+    text-shadow:
+
+ 0px -2px 4px #fff,
+
+ 0px -2px 10px #FF3,
+
+ 0px -10px 20px #F90,
+
+ 0px -20px 40px #C33; */
 }
-.time{
+
+.time {
     display: flex;
     flex-direction: column;
     font-size: 8em;
     font-weight: 400;
     text-shadow: 3px 3px 3px 3px #cccccc;
-    
-}
-.quote{
-    font-size: 3ex;
 
 }
-.toggle{
+
+.quote {
+    font-size: 3ex;
+}
+
+.toggle-theme {
     position: absolute;
     top: 20px;
-    right: 20px;
+    left: 20px;
     background: transparent;
     color: #020202;
     font-size: 2em;
 }
 
-.theme{
+.theme {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    left: 0;
     opacity: 0;
-    transition: opacity 1s,color 0.1s;
+    transition: opacity 1s, color 0.1s;
 }
-.theme.active{
+
+.theme.active {
     opacity: 1;
 }
-body.dark #sun{
+
+body.dark #sun {
     color: yellow;
 }
-.todo{
+
+.todo-btn {
     position: absolute;
     bottom: 20px;
     right: 20px;
     background: transparent;
     color: currentColor;
 }
-nav{
+
+nav {
     display: flex;
     flex-direction: column;
     position: fixed;
     height: 100vh;
     background-color: currentColor;
+
     width: 20vw;
     right: -20vw;
     transform: translateX(20vw);
     transition: transform 1s ease-out;
-    padding: 20px;
 }
 
-nav.active{
+nav.active {
     transform: translateX(-20vw);
 }
 
-.close{
-    padding: 0;
+.close {
+    margin: 10px;
     width: min-content;
     display: block;
     color: crimson;
     background: transparent;
 }
-.add{
+
+.close::after {
+    content: "Close";
+}
+
+.add {
     background-color: #1c9980;
     color: currentColor;
-    position: absolute;
-    width: 80%;
-    margin: 10px;   
-    bottom: 10px;
+    margin: 10px;
 }
-.add::after{
+
+.add::after {
     content: " Add Todo";
 }
+
+#newTodo {
+    border-radius: 15px;
+    outline-offset: 2px;
+    border: #020202 solid 1.5px;
+    padding: 10px;
+}
+
+.todo-div {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    bottom: 10px;
+    width: 80%;
+    margin: 10px;
+}
+
+.todo-container {
+    background-color: #3450a1;
+    border-radius: 15px 0 0 15px;
+    overflow:auto ;
+    margin: 0 0 0 10px;
+}
+
+
+.todo-content {
+    display: flex;
+    flex-direction: column;
+    background-color: #2b79ff;
+    margin: 25px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    box-shadow: #020202 4px 3px;
+    color: #020202;
+    font-size: larger;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+  
+  
