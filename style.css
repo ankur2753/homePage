@@ -133,14 +133,14 @@ nav.active {
 .add::after {
     content: " Add Todo";
 }
-
 #newTodo {
     border-radius: 15px;
-    outline-offset: 2px;
     border: #020202 solid 1.5px;
     padding: 10px;
 }
-
+#newTodo:focus{
+    outline: none;
+}
 .todo-div {
     display: flex;
     flex-direction: column;
