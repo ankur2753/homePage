@@ -1,8 +1,7 @@
 //trying to code this one using the functional pradigm
-const completed = "completed";
-const incomplete = "!completed";
+var db;
 var date = new Date();
-
+const objStoreTodo ="Todos"
 function getEle(id) {
     return document.getElementById(id);
 }
@@ -49,10 +48,6 @@ getEle("toggleMode").addEventListener("click", () => {
 
 // check local storage at the start to prevent errors if not present set
 
-function checkLocal() {
-    localStorage.getItem(completed) == null ? localStorage.setItem(completed, "[]") : null;
-    localStorage.getItem(incomplete) == null ? localStorage.setItem(incomplete, "[]") : null;
-}
 
 function openTransaction(objectStore) {
     return db.transaction(objectStore, "readwrite").objectStore(objectStore);
@@ -137,7 +132,7 @@ function clearDivs() {
 // for deleting todos ->  remove element from html and local storage
 function deleteTodo(id) {
     let key = parseInt(id.split(" ")[1]) ;
-    let objStore = openTransaction("Todos");
+    let objStore = openTransaction(objStoreTodo);
     let request =objStore.delete(key);
     request.onsuccess = e => {
         getEle(id).parentNode.removeChild(getEle(id));
@@ -149,7 +144,7 @@ function deleteTodo(id) {
 function toggleCompletionStatus(id) {
 
     let key = parseInt(id.split(" ")[1]) ;
-    let objStore = openTransaction("Todos");
+    let objStore = openTransaction(objStoreTodo);
     let request =objStore.get(key);
     request.onsuccess = e => {
         var value = e.target.result;
@@ -166,7 +161,7 @@ function toggleCompletionStatus(id) {
 // enable and disable nav bar on click
 getEle("todo").addEventListener("click", () => {
     clearDivs();
-    getPage("Todos")
+    getPage(objStoreTodo)
     toggleclass(getEle("todo-bar"), "active");
 });
 getEle("closeTodo").addEventListener("click", () => {
@@ -174,16 +169,14 @@ getEle("closeTodo").addEventListener("click", () => {
 });
 
 getEle("addTodo").addEventListener("click", () => {
-    setItem("Todos", getEle("newTodo").value);
+    setItem(objStoreTodo, getEle("newTodo").value);
     displayDiv(
         createDivForTodo(false, getEle("newTodo").value))
     getEle("newTodo").value = ''
 });
 
 
-checkLocal();
 
-var db;
 // indexDB stuff
 createDB("Storage");
 async function createDB(name, ...objectStores) {
@@ -197,7 +190,7 @@ async function createDB(name, ...objectStores) {
         db = await e.target.result;
         // for the first time add todos automatically
         if (e.oldVersion < 1) {
-            db.createObjectStore("Todos", {
+            db.createObjectStore(objStoreTodo, {
                 autoIncrement: true,
                 keyPath: "id"
             }).add({
