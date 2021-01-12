@@ -133,7 +133,6 @@ nav.active {
 .add::after {
     content: " Add Todo";
 }
-
 #newTodo {
     border-radius: 15px;
     border: #020202 solid 1.5px;
