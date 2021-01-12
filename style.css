@@ -12,7 +12,7 @@ body {
     transition-property: background-color color;
     transition-duration: 1s;
     color: #020202;
-
+    background-color: #aeaeae;
 }
 
 body.dark {
@@ -136,11 +136,12 @@ nav.active {
 
 #newTodo {
     border-radius: 15px;
-    outline-offset: 2px;
     border: #020202 solid 1.5px;
     padding: 10px;
 }
-
+#newTodo:focus{
+    outline: none;
+}
 .todo-div {
     display: flex;
     flex-direction: column;
@@ -161,7 +162,7 @@ nav.active {
 .todo-content {
     display: flex;
     flex-direction: column;
-    background-color: #2b79ff;
+    background-color: #1793f8;
     margin: 25px;
     padding: 10px;
     justify-content: center;
@@ -170,7 +171,10 @@ nav.active {
     color: #020202;
     font-size: larger;
 }
-
+.todo-container .done{
+    text-decoration: line-through;
+    background-color: #8402fd;
+}
 .actions {
     display: flex;
     justify-content: space-between;
