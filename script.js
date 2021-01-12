@@ -171,7 +171,7 @@ getEle("closeTodo").addEventListener("click", () => {
 getEle("addTodo").addEventListener("click", () => {
     setItem(objStoreTodo, getEle("newTodo").value);
     displayDiv(
-        createDivForTodo(false, getEle("newTodo").value))
+        createDivForTodo(false, getEle("newTodo").value,`Todo ${getEle("todos").lastChild.id.split(" ")[1]}`))
     getEle("newTodo").value = ''
 });
 
