@@ -154,7 +154,9 @@ function deleteTodo(id) {
     let objStore = openTransaction(currentObjStore);
     let request = objStore.delete(key);
     request.onsuccess = e => {
-        getEle(id).parentNode.removeChild(getEle(id));
+        // getEle(id).parentNode.removeChild(getEle(id));
+        clearDivs();
+        getPage(currentObjStore);
     }
     request.onerror = err => console.error;
 }
@@ -190,11 +192,14 @@ getEle("closeTodo").addEventListener("click", () => {
     toggleclass(getEle("todo-bar"), "active");
 });
 
+// add todos on click
 getEle("addTodo").addEventListener("click", () => {
     try {
         let text = getEle("newTodo").value;
         if (text.length > 0) {
+
             setItem(currentObjStore, text);
+            clearDivs();
             getPage(currentObjStore);
         }
         getEle("newTodo").value = '';
@@ -206,6 +211,7 @@ getEle("addTodo").addEventListener("click", () => {
 
 
 createDB("Storage", "idea");
+
 // indexDB stuff
 async function createDB(name, ...objectStores) {
 

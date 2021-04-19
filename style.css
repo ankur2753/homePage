@@ -206,6 +206,7 @@ nav.active {
     width: 80%;
     margin: 10px;
     justify-content: center;
+    width: 95%;
 }
 
 .todo-container {
