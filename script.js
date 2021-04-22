@@ -1,13 +1,13 @@
 //trying to code this one using the functional pradigm
 var db;
-var currentObjStore = "Todos"
+var objStores = ["Todos", "Ideas", "checklist", "cravings"];
+var currentObjStore = objStores[0];
+
+
+
 var objectType = {
     autoIncrement: true,
     keyPath: "id"
-};
-var exampleObj = {
-    completed: false,
-    name: "this is an example "
 };
 
 function getEle(id) {
@@ -209,8 +209,21 @@ getEle("addTodo").addEventListener("click", () => {
 
 });
 
+document.querySelectorAll(".tabs").forEach(
+    radiobutton => {
+        radiobutton.addEventListener("click", () => {
+            currentObjStore=objStores[radiobutton.value]
+            clearDivs();
+            getPage(currentObjStore);
+        })
+    }
+);
 
-createDB("Storage", "idea");
+
+
+
+
+createDB("Storage", ...objStores);
 
 // indexDB stuff
 async function createDB(name, ...objectStores) {
@@ -227,19 +240,16 @@ async function createDB(name, ...objectStores) {
     request.onupgradeneeded = async (e) => {
         db = await e.target.result;
         // for the first time add todos automatically
-        console.log("old verison was" + e.oldVersion);
+        console.log("old verison was " + e.oldVersion);
         if (e.oldVersion < 1) {
-            db.createObjectStore(currentObjStore, objectType).add(exampleObj);
+            objectStores.forEach(objStore => {
+                db.createObjectStore(objStore, objectType).add({
+                    completed: false,
+                    name: `this is an example of ${objStore}`
+                });
+            })
         }
-        objectStores.forEach(objStore => {
-            db.createObjectStore(objStore, {
-                autoIncrement: true,
-                keyPath: "id"
-            }).add({
-                completed: false,
-                name: "this is an example "
-            });
-        })
+        
     }
 }
 
