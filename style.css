@@ -10,6 +10,7 @@
     --light-nav-background: #36827F;
     --darkMode-nav-background: #14213d;
     --todo-container: rgb(240, 135, 0);
+    --nav-width:20vw;
 }
 
 body {
@@ -264,5 +265,26 @@ nav.active {
     100%{
         transform: rotateZ(0deg);
 
+    }
+}
+@media only screen and (max-width:500px) {
+    nav{
+        width: 100vw;
+        right: -100vw;
+
+    }
+    nav.active {
+        transform: translateX(-100vw);
+    }
+    .background{
+        bottom: -7vh;
+        left: 10vw;
+        transform: scale(0.8);
+    }
+    .seconds{
+        display: none;
+    }
+    .time{
+        font-size: 6em;
     }
 }
