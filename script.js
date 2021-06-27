@@ -44,19 +44,27 @@ setInterval(() => {
   updateDateTime(date);
 }, 1000);
 
+function switchTheme(e) {
+  if (e.target.checked) {
+    document.documentElement.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark"); //add this
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light"); //add this
+  }
+}
+
 // for darkmode toggle class on click
-getEle("toggleMode").addEventListener("click", () => {
-  toggleclass(document.body, "dark");
-  toggleclass(getEle("sun"), "active");
-  toggleclass(getEle("moon"), "active");
-});
+
+getEle("checkbox").addEventListener("change",switchTheme);
+document.onloadeddata(document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")))
 
 // ************************************************//
 
 // ***********************************************//
 
 import("./todo.js")
-  .then(({ getPage, clearDivs, currentObjStore, objStores}) => {
+  .then(({ getPage, clearDivs, currentObjStore, objStores }) => {
     // enable and disable nav bar on click
     getEle("todo").addEventListener("click", () => {
       toggleclass(getEle("todo-bar"), "active");

@@ -119,7 +119,7 @@ async function createDB(name, ...objectStores) {
     db = request.result;
     if (objectStores.length > 0) {
       // open a new version to start the on upgrade needed function
-      let currVersion = request.result.version;
+      let currVersion = db.version;
       request = indexedDB.open(name, ++currVersion);
     }
   };
