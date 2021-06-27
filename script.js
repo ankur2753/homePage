@@ -57,10 +57,10 @@ function switchTheme(e) {
 // for darkmode toggle class on click
 
 getEle("checkbox").addEventListener("change",switchTheme);
-document.onloadeddata(document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")))
+document.addEventListener("loadeddata",document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")))
 
 // ************************************************//
-
+  
 // ***********************************************//
 
 import("./todo.js")
@@ -101,3 +101,4 @@ import("./todo.js")
   .catch((error) => {
     console.error(error);
   });
+    
