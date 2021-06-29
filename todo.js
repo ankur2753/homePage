@@ -31,7 +31,7 @@ export function getPage(objectStore) {
 }
 
 // funtion to save todos to local storage
-function setItem(objectStore, todoStr) {
+export function setItem(objectStore, todoStr) {
   let objStore = openTransaction(objectStore);
   let req = objStore.add({
     completed: false,
@@ -65,7 +65,7 @@ function divContent(todoStr) {
                       <i class="far  fa-check-square"></i>
                </button>
                <button class="btn"  onclick="deleteTodo(this.parentElement.parentElement.id)">
-                 <i class="fas fa-trash"></i>
+               &#9249
                </button>
               </div>
               `;

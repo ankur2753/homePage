@@ -46,25 +46,36 @@ setInterval(() => {
 
 function switchTheme(e) {
   if (e.target.checked) {
-    document.documentElement.setAttribute("data-theme", "dark");
+     changeTheme("dark");
     localStorage.setItem("theme", "dark"); //add this
   } else {
-    document.documentElement.setAttribute("data-theme", "light");
+     changeTheme("light");
     localStorage.setItem("theme", "light"); //add this
   }
+}
+function changeTheme(themeString) {
+  document.documentElement.setAttribute("data-theme",themeString);
 }
 
 // for darkmode toggle class on click
 
-getEle("checkbox").addEventListener("change",switchTheme);
-document.addEventListener("loadeddata",document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")))
-
+getEle("checkbox").addEventListener("change", switchTheme);
+// check local storage for last theme 
+function themeing(){
+  let lastTheme = localStorage.getItem("theme")
+  if(!lastTheme)return;
+  changeTheme(lastTheme)
+  if (lastTheme=="dark") {
+    getEle("checkbox").checked =true;
+  }
+}
+themeing()
 // ************************************************//
-  
+
 // ***********************************************//
 
 import("./todo.js")
-  .then(({ getPage, clearDivs, currentObjStore, objStores }) => {
+  .then(({ getPage, clearDivs,setItem, currentObjStore, objStores }) => {
     // enable and disable nav bar on click
     getEle("todo").addEventListener("click", () => {
       toggleclass(getEle("todo-bar"), "active");
@@ -101,4 +112,3 @@ import("./todo.js")
   .catch((error) => {
     console.error(error);
   });
-    

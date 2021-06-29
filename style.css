@@ -21,7 +21,6 @@
   top: 20px;
   left: 20px;
   background: transparent;
-  color: var(--font);
   font-size: 2em;
   align-items: center;
 }
@@ -53,7 +52,7 @@ em {
 
 .slider:before {
   background-color: #fff;
-  bottom: 4px;
+  bottom: 4px;  
   content: "";
   height: 26px;
   left: 4px;
@@ -62,8 +61,11 @@ em {
   width: 26px;
 }
 
-input:checked + .slider {
-  background-color: #66bb6a;
+input[type="checkbox"] + .slider {
+  background-color: var(--font);
+}
+input[type="checkbox"]:checked + .slider {
+  background-color: #0ea601;
 }
 
 input:checked + .slider:before {
@@ -84,7 +86,7 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  transition-property: background-color color;
+  transition-property: background-color ,color;
   transition-duration: 1s;
   color: var(--font);
   background-color: var(--background);
@@ -148,7 +150,6 @@ body {
   font-size: 20px;
 }
 
-
 .todo-btn {
   position: fixed;
   bottom: 20px;
@@ -178,14 +179,10 @@ nav.active {
   margin: 10px;
   width: min-content;
   display: block;
-  color: rgba(168, 6, 30, 0.747);
-  background: transparent;
+  border-radius: 10px;
+  padding: 5px;
 }
 
-/* 
-.close::after {
-    content: "Close";
-} */
 
 .tabs-container {
   display: flex;
@@ -211,7 +208,7 @@ nav.active {
 
 .add {
   background-color: var(--todo-container);
-  color: currentColor;
+  color: var(--font);
   margin: 10px;
   font-size: medium;
 }
@@ -254,13 +251,14 @@ nav.active {
 .todo-content {
   display: flex;
   flex-direction: column;
-  background-color: #1793f8;
+  background-color: transparent;
   margin: 25px;
+  text-overflow: ellipsis;
+  overflow: hidden;
   padding: 10px;
   box-shadow: #020202 4px 4px 4px;
-  color: #020202;
+  color: var(--font);
   font-size: larger;
-  transition: background-color 1s ease-in-out;
 }
 
 .todo-container .done {
