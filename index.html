@@ -179,10 +179,13 @@
 
         <button class="btn close" id="closeTodo">&#10060</button>
         <div class="tabs-container" id="tabsContainer">
-            <input type="radio" name="notesType" value="0" class="tabs" checked>
-            <input type="radio" name="notesType" value="1" class="tabs">
-            <input type="radio" name="notesType" value="2" class="tabs">
-            <input type="radio" name="notesType" value="3" class="tabs">
+            <select id="pageSelector">
+                <option value="Todos">Todos</option>
+                <option value="Ideas">Ideas</option>
+                <option value="checklist">checklist</option>
+                <option value="cravings">cravings</option>
+            </select>
+            <button class="btn" id="modifyPageBtn">&vellip;</button>
         </div>
         <div class="todo-container" id="todos">
             <!-- this one willl contain the todos from -->

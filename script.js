@@ -46,41 +46,46 @@ setInterval(() => {
 
 function switchTheme(e) {
   if (e.target.checked) {
-     changeTheme("dark");
+    changeTheme("dark");
     localStorage.setItem("theme", "dark"); //add this
   } else {
-     changeTheme("light");
+    changeTheme("light");
     localStorage.setItem("theme", "light"); //add this
   }
 }
 function changeTheme(themeString) {
-  document.documentElement.setAttribute("data-theme",themeString);
+  document.documentElement.setAttribute("data-theme", themeString);
 }
 
 // for darkmode toggle class on click
 
 getEle("checkbox").addEventListener("change", switchTheme);
-// check local storage for last theme 
-function themeing(){
-  let lastTheme = localStorage.getItem("theme")
-  if(!lastTheme)return;
-  changeTheme(lastTheme)
-  if (lastTheme=="dark") {
-    getEle("checkbox").checked =true;
+// check local storage for last theme
+function themeing() {
+  let lastTheme = localStorage.getItem("theme");
+  if (!lastTheme) return;
+  changeTheme(lastTheme);
+  if (lastTheme == "dark") {
+    getEle("checkbox").checked = true;
   }
 }
-themeing()
+themeing();
 // ************************************************//
 
 // ***********************************************//
+function clearDivs() {
+  getEle("todos").innerHTML = "";
+}
 
 import("./todo.js")
-  .then(({ getPage, clearDivs,setItem, currentObjStore, objStores }) => {
+  .then(({ getPage,  setItem, currentObjStore, objStores }) => {
     // enable and disable nav bar on click
     getEle("todo").addEventListener("click", () => {
       toggleclass(getEle("todo-bar"), "active");
       clearDivs();
-      getPage(currentObjStore);
+      getPage(currentObjStore).forEach(ele=>{
+        displayDiv(createDivForTodo(ele.compeleted,ele.name,ele.id))
+      });
     });
     getEle("closeTodo").addEventListener("click", () => {
       toggleclass(getEle("todo-bar"), "active");
@@ -93,7 +98,9 @@ import("./todo.js")
         if (text.length > 0) {
           setItem(currentObjStore, text);
           clearDivs();
-          getPage(currentObjStore);
+          getPage(currentObjStore).forEach(ele=>{
+            displayDiv(createDivForTodo(ele.compeleted,ele.name,ele.id))
+          });
         }
         getEle("newTodo").value = "";
       } catch (error) {
@@ -101,14 +108,48 @@ import("./todo.js")
       }
     });
 
-    document.querySelectorAll(".tabs").forEach((radiobutton) => {
-      radiobutton.addEventListener("click", () => {
-        currentObjStore = objStores[radiobutton.value];
-        clearDivs();
-        getPage(currentObjStore);
-      });
+      getEle("pageSelector").onchange = function (){
+        clearDivs()
+        getPage(objStores[getEle("pageSelector").selectedIndex]).forEach(ele=>{
+          console.log(ele);
+          displayDiv(createDivForTodo(ele.compeleted,ele.name,ele.id))
+        })
+      }
+      async function x(){
+        await setTimeout(async()=>{await getPage(objStores[0]).forEach(ele=>console.log(ele))},5000)
+      }
+      x();
+    })
+    .catch((error) => {
+      console.error(error);
     });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+    
+function createDivForTodo(completion, todoStr, id) {
+  let div = document.createElement("div");
+  div.classList.add("todo-content");
+  div.id = id;
+  div.innerHTML = divContent(todoStr);
+  if (completion) {
+    div.classList.add("done");
+  }
+  return div;
+}
+
+function divContent(todoStr) {
+  return `<div class="string">${todoStr}</div>
+              <div class="actions">
+               <button class="btn"  onclick="toggleCompletionStatus(this.parentElement.parentElement.id)">
+               &check;
+               </button>
+               <button class="btn delete"  onclick="deleteTodo(this.parentElement.parentElement.id)">
+               &#128465;
+               </button>
+              </div>
+              `;
+}
+
+function displayDiv(div) {
+  getEle("todos").appendChild(div);
+}
+
+indexedDB.deleteDatabase("Storage");

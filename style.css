@@ -6,7 +6,7 @@
   --font: #020202;
   --background: #d6fff9;
   --nav-background: #36827f;
-  --todo-container: rgb(240, 135, 0);
+  --neutral-color: rgb(240, 135, 0);
   --nav-width: 20vw;
   --blob-color: rgb(240, 120, 90);
 }
@@ -98,7 +98,7 @@ body {
   z-index: -60;
   display: flex;
   justify-content: end;
-  right: 2vw;
+  right: 4vw;
   bottom: 0;
 }
 .background-mobile {
@@ -112,10 +112,11 @@ body {
   border-radius: 15px;
   background: transparent;
   cursor: pointer;
+  color: var(--font);
 }
 
 .btn:hover {
-  scale: 1.089;
+  scale: 1.045;
 }
 
 .date {
@@ -165,10 +166,11 @@ nav {
   height: 100vh;
   background-color: var(--nav-background);
   color: currentColor;
-  width: 20vw;
+  width: 22vw;
   right: -20vw;
   transform: translateX(20vw);
   transition: all 1s ease-out;
+  padding: 0;
 }
 
 nav.active {
@@ -184,30 +186,8 @@ nav.active {
 }
 
 
-.tabs-container {
-  display: flex;
-  position: relative;
-  overflow-y: none;
-  margin: 0 0 10px 0;
-}
-
-.tabs {
-  position: relative;
-  margin: 8px 0 0 8px;
-  padding: 10px;
-  width: max-content;
-  background-color: #b859f880;
-  height: max-content;
-  left: 1pc;
-  cursor: pointer;
-}
-
-.tabs.curr {
-  background-color: #9504f6;
-}
-
 .add {
-  background-color: var(--todo-container);
+  background-color: var(--neutral-color);
   color: var(--font);
   margin: 10px;
   font-size: medium;
@@ -215,6 +195,9 @@ nav.active {
 
 .add::after {
   content: " Add Todo";
+}
+.delete::after{
+  content: "delete";
 }
 
 #newTodo {
@@ -237,41 +220,58 @@ nav.active {
   justify-content: center;
   width: 95%;
 }
+.tabs-container{
+  display: flex;
+}
+select#pageSelector{
+  width: 80%;
+  appearance: none;
+  margin: 5%;
+  padding: 2%;
+}
 
 .todo-container {
   background-color: transparent;
-  border-radius: 15px 0 0 15px;
   overflow: auto;
-  margin: 0 20px 0 10px;
   display: flex;
   flex-direction: column;
+  padding: 0;
+  padding-left: 10px;
   height: 70vh;
 }
 
 .todo-content {
   display: flex;
-  flex-direction: column;
   background-color: transparent;
-  margin: 25px;
+  /* margin: 25px; */
   text-overflow: ellipsis;
   overflow: hidden;
-  padding: 10px;
-  box-shadow: #020202 4px 4px 4px;
-  color: var(--font);
   font-size: larger;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin: 0;
 }
 
-.todo-container .done {
+.todo-content .done {
   text-decoration: line-through;
-  background-color: rgb(68, 45, 131);
 }
 
 .actions {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
+  flex-direction: column;
+  width: 20%;
+  flex-shrink: 10;
+  margin: 0;
+  padding: 0;
 }
-
+.string{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 80%;
+}
 #girlhand {
   animation: move-Hand 10s ease-in-out infinite;
   transform-origin: top left;
