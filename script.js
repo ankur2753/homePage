@@ -110,7 +110,6 @@ function getSelectedPageIndex() {
   return getEle("pageSelector").selectedIndex;
 }
 
-indexedDB.deleteDatabase("Storage");
 // ***********************************************//
 
 import("./todo.js")
