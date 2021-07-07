@@ -1,3 +1,4 @@
+var deleteTodos, changeStatus, currentObjStore;
 //trying to code this one using the functional pradigm
 
 function getEle(id) {
@@ -72,58 +73,12 @@ function themeing() {
 themeing();
 // ************************************************//
 
-// ***********************************************//
+// clears the content of todo-container
 function clearDivs() {
   getEle("todos").innerHTML = "";
 }
 
-import("./todo.js")
-  .then(({ getPage,  setItem, currentObjStore, objStores }) => {
-    // enable and disable nav bar on click
-    getEle("todo").addEventListener("click", () => {
-      toggleclass(getEle("todo-bar"), "active");
-      clearDivs();
-      getPage(currentObjStore).forEach(ele=>{
-        displayDiv(createDivForTodo(ele.compeleted,ele.name,ele.id))
-      });
-    });
-    getEle("closeTodo").addEventListener("click", () => {
-      toggleclass(getEle("todo-bar"), "active");
-    });
-
-    // add todos on click
-    getEle("addTodo").addEventListener("click", () => {
-      try {
-        let text = getEle("newTodo").value;
-        if (text.length > 0) {
-          setItem(currentObjStore, text);
-          clearDivs();
-          getPage(currentObjStore).forEach(ele=>{
-            displayDiv(createDivForTodo(ele.compeleted,ele.name,ele.id))
-          });
-        }
-        getEle("newTodo").value = "";
-      } catch (error) {
-        alert(`opps something went wrong  ${error}`);
-      }
-    });
-
-      getEle("pageSelector").onchange = function (){
-        clearDivs()
-        getPage(objStores[getEle("pageSelector").selectedIndex]).forEach(ele=>{
-          console.log(ele);
-          displayDiv(createDivForTodo(ele.compeleted,ele.name,ele.id))
-        })
-      }
-      async function x(){
-        await setTimeout(async()=>{await getPage(objStores[0]).forEach(ele=>console.log(ele))},5000)
-      }
-      x();
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-    
+// creates a div with formating to
 function createDivForTodo(completion, todoStr, id) {
   let div = document.createElement("div");
   div.classList.add("todo-content");
@@ -138,10 +93,10 @@ function createDivForTodo(completion, todoStr, id) {
 function divContent(todoStr) {
   return `<div class="string">${todoStr}</div>
               <div class="actions">
-               <button class="btn"  onclick="toggleCompletionStatus(this.parentElement.parentElement.id)">
+               <button class="btn"  onclick="changeStatus(this.parentElement.parentElement.id)">
                &check;
                </button>
-               <button class="btn delete"  onclick="deleteTodo(this.parentElement.parentElement.id)">
+               <button class="btn delete"  onclick='deleteTodos(this.parentElement.parentElement.id)'>
                &#128465;
                </button>
               </div>
@@ -151,5 +106,57 @@ function divContent(todoStr) {
 function displayDiv(div) {
   getEle("todos").appendChild(div);
 }
+function getSelectedPageIndex() {
+  return getEle("pageSelector").selectedIndex;
+}
 
 indexedDB.deleteDatabase("Storage");
+// ***********************************************//
+
+import("./todo.js")
+  .then(
+    ({ getPage, addTodo, deleteTodo, toggleCompletionStatus, objStores }) => {
+      deleteTodos = (id) => {
+        deleteTodo(id, currentObjStore);
+        changePage();
+      };
+      changeStatus = (id) => {
+        toggleCompletionStatus(id, currentObjStore);
+        console.log(getEle(id).childNodes);
+        toggleclass(getEle(id), "done");
+        changePage();
+      };
+      function changePage() {
+        clearDivs();
+        currentObjStore = objStores[getSelectedPageIndex()];
+        getPage(currentObjStore);
+      }
+      // enable and disable nav bar on click
+      getEle("todo").addEventListener("click", () => {
+        toggleclass(getEle("todo-bar"), "active");
+        changePage();
+      });
+      getEle("closeTodo").addEventListener("click", () => {
+        toggleclass(getEle("todo-bar"), "active");
+      });
+
+      // add todos on click
+      getEle("addTodo").addEventListener("click", () => {
+        try {
+          let text = getEle("newTodo").value;
+          if (text.length > 0) {
+            addTodo(currentObjStore, text);
+            changePage();
+          }
+          getEle("newTodo").value = "";
+        } catch (error) {
+          alert(`opps something went wrong  ${error}`);
+        }
+      });
+
+      getEle("pageSelector").onchange = changePage;
+    }
+  )
+  .catch((error) => {
+    console.error(error);
+  });

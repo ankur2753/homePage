@@ -1,7 +1,6 @@
 
 var db;
 var objStores = ["Todos", "Ideas", "checklist", "cravings"];
-var currentObjStore = objStores[0];
 var objectType = {
   autoIncrement: true,
   keyPath: "id",
@@ -53,9 +52,6 @@ function setItem(objectStore, todoStr) {
 
 
 
-function clearDivs() {
-  getEle("todos").innerHTML = "";
-}
 
 // for deleting todos ->  remove element from html and local storage
 function deleteTodo(id,objectStore) {
@@ -67,19 +63,16 @@ function deleteTodo(id,objectStore) {
 }
 
 // for marking done -> add line-through and move to completed in local storage
-function toggleCompletionStatus(id) {
+function toggleCompletionStatus(id,objectStore) {
   let key = parseInt(id.split(" ")[1]);
-  let objStore = openTransaction(currentObjStore);
+  let objStore = openTransaction(objectStore);
   let request = objStore.get(key);
   request.onsuccess = (e) => {
     var value = e.target.result;
     value.completed = !value.completed;
     objStore.put(value);
-    toggleclass(getEle(id), "done");
-    toggleclass(getEle(id).querySelector("i"), "far");
-    toggleclass(getEle(id).querySelector("i"), "fas");
   };
-  request.onerror = (err) => console.error;
+  request.onerror = (err) => console.error(err);
 }
 
 createDB("Storage", ...objStores);
@@ -118,4 +111,4 @@ function addObjStore(objStore) {
 }
 
 
-export {setItem as addTodo,getPage,currentObjStore,objStores}
+export {setItem as addTodo,deleteTodo,toggleCompletionStatus,getPage,objStores}

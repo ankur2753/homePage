@@ -253,8 +253,9 @@ select#pageSelector{
   margin: 0;
 }
 
-.todo-content .done {
+.todo-content.done .string{
   text-decoration: line-through;
+  color: var(--blob-color);
 }
 
 .actions {
