@@ -185,7 +185,7 @@
                 <option value="checklist">checklist</option>
                 <option value="cravings">cravings</option>
             </select>
-            <button class="btn" id="modifyPageBtn" onclick="getEle('modifyPopupBackground').style.display='flex'">&vellip;</button>
+            <button class="btn" id="modifyPageBtn" onclick="toggleModal()">&vellip;</button>
             <div class="modal" id="modifyPopupBackground">
                 <div class="modal-content">
                     <span class="pageName">Todos</span>
@@ -197,9 +197,9 @@
         <div class="todo-container" id="todos">
             <!-- this one willl contain the todos from -->
         </div>
-        <form id="addTodoContainer" class="todo-div">
+        <form id="addTodoContainer" class="todo-div" onsubmit="function handleForm(event) { event.preventDefault(); }">
             <input type="text" id="newTodo">
-            <input id="addTodo" class="btn add" type="submit" value="&plus; Add Todo" />
+            <input  class="btn add" type="submit" value="&plus; Add Todo" />
         </form>
 
     </nav>

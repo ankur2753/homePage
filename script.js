@@ -109,7 +109,15 @@ function displayDiv(div) {
 function getSelectedPageIndex() {
   return getEle("pageSelector").selectedIndex;
 }
+function toggleModal() {
+  if (getEle('modifyPopupBackground').style.display =='flex') {
+    getEle('modifyPopupBackground').style.display="none";
+  } else {
+    getEle('modifyPopupBackground').style.display='flex';
+  }
+}
 
+getEle("modifyPopupBackground").addEventListener("click",toggleModal)
 // ***********************************************//
 
 import("./todo.js")
@@ -143,7 +151,8 @@ import("./todo.js")
       });
 
       // add todos on click
-      getEle("addTodo").addEventListener("click", () => {
+      getEle("addTodoContainer").addEventListener("submit", e => {
+        e.preventDefault();
         try {
           let text = getEle("newTodo").value;
           if (text.length > 0) {

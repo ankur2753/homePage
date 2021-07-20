@@ -9,6 +9,7 @@
   --neutral-color: rgb(240, 135, 0);
   --nav-width: 25vw;
   --blob-color: rgb(240, 120, 90);
+  --modal-color:#969ED9;
 }
 [data-theme="dark"] {
 --font: rgb(250, 235, 215);
@@ -293,11 +294,19 @@ select#pageSelector{
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 .modal-content {
-  background-color: #fefefe;
+  z-index: 10;
+  background-color: var(--modal-color);
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
-  border: 1px solid #888;
+  border: 3px solid #6974C9;
+  border-radius: 10px;
   width: 80%; /* Could be more or less, depending on screen size */
+  color: black;
+}
+.modal-content>span{
+  display: block;
+  margin: 10px;
+  border-bottom: 1px solid black;
 }
 @keyframes move-Hand {
   0% {
