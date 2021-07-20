@@ -5,7 +5,9 @@ var objectType = {
   autoIncrement: true,
   keyPath: "id",
 };
-
+function requestErr(err){
+  console.error(`error in request is : +${err}`);
+}
 // check local storage at the start to prevent errors if not present set
 
 function openTransaction(objectStore) {
@@ -28,8 +30,7 @@ function getPage(objectStore) {
       cursor.continue();
     }
   };
-  request.onerror = (err) => console.error(`error +${err}`);
-  console.log(res);
+  request.onerror = requestErr; 
   return res;
 }
 
@@ -41,7 +42,7 @@ function setItem(objectStore, todoStr) {
     name: todoStr,
   });
   req.onsuccess = (e) => console.log;
-  req.onerror = (e) => console.log(e);
+  req.onerror = requestErr; 
 }
 
 // to manage deletion and completion status we need id -->
@@ -58,7 +59,7 @@ function deleteTodo(id,objectStore) {
   let key = parseInt(id.split(" ")[1]);
   let objStore = openTransaction(objectStore);
   let request = objStore.delete(key);
-  request.onerror = (err) => {console.error(err);return false};
+  request.onerror = requestErr; 
   return true;
 }
 
@@ -72,7 +73,7 @@ function toggleCompletionStatus(id,objectStore) {
     value.completed = !value.completed;
     objStore.put(value);
   };
-  request.onerror = (err) => console.error(err);
+  request.onerror = requestErr; 
 }
 
 createDB("Storage", ...objStores);
@@ -83,13 +84,14 @@ async function createDB(name, ...objectStores) {
   let request = indexedDB.open(name);
   request.onsuccess = async() => {
     db = request.result;
+    objStores = db.objectStoreNames;
     if (objectStores.length > 0) {
       // open a new version to start the on upgrade needed function
       let currVersion = db.version;
       request = indexedDB.open(name, ++currVersion);
     }
   };
-  request.onerror = (err) => console.error;
+  request.onerror = requestErr; (err) => console.error;
   request.onupgradeneeded = async (e) => {
     db = await e.target.result;
     // for the first time add todos automatically

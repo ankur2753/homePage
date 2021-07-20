@@ -128,7 +128,10 @@ import("./todo.js")
       function changePage() {
         clearDivs();
         currentObjStore = objStores[getSelectedPageIndex()];
-        getPage(currentObjStore);
+        let x =getPage(currentObjStore);
+        for (const iterator of x) {
+          console.log(iterator);
+        }
       }
       // enable and disable nav bar on click
       getEle("todo").addEventListener("click", () => {

@@ -7,11 +7,11 @@
   --background: #d6fff9;
   --nav-background: #36827f;
   --neutral-color: rgb(240, 135, 0);
-  --nav-width: 20vw;
+  --nav-width: 25vw;
   --blob-color: rgb(240, 120, 90);
 }
 [data-theme="dark"] {
-  --font: rgb(250, 235, 215);
+--font: rgb(250, 235, 215);
   --background: #121212;
   --nav-background: #14213d;
 }
@@ -166,15 +166,15 @@ nav {
   height: 100vh;
   background-color: var(--nav-background);
   color: currentColor;
-  width: 22vw;
-  right: -20vw;
-  transform: translateX(20vw);
+  width: var(--nav-width);
+  right: calc(var(--nav-width)*-1);
+  transform: translateX(var(--nav-width));
   transition: all 1s ease-out;
   padding: 0;
 }
 
 nav.active {
-  transform: translateX(-20vw);
+  transform: translateX(calc(var(--nav-width)*-1));
 }
 
 .close {
@@ -251,6 +251,7 @@ select#pageSelector{
   align-items: center;
   align-content: center;
   margin: 0;
+  border-bottom:1px solid;
 }
 
 .todo-content.done .string{
@@ -262,7 +263,7 @@ select#pageSelector{
   display: flex;
   flex-direction: column;
   width: 20%;
-  flex-shrink: 10;
+  flex-shrink: 2;
   margin: 0;
   padding: 0;
 }
@@ -278,6 +279,26 @@ select#pageSelector{
   transform-origin: top left;
   transform-box: fill-box;
 }
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: var(--nav-width); /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
 @keyframes move-Hand {
   0% {
     transform: rotateZ(0deg);
@@ -290,12 +311,9 @@ select#pageSelector{
   }
 }
 @media only screen and (max-width: 700px) {
+  
   nav {
-    width: 100vw;
-    right: -100vw;
-  }
-  nav.active {
-    transform: translateX(-100vw);
+--nav-width:100vw;
   }
   .background-desktop {
     display: none;

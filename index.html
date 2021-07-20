@@ -156,11 +156,11 @@
     <div class="background-mobile">
         <!-- find a way to genrate random svg shapes -->
 
-        <svg id="bottom-circle" >
-            <circle cx="190px" cy="190px" r="180"/>
+        <svg id="bottom-circle">
+            <circle cx="190px" cy="190px" r="180" />
         </svg>
-        <svg id="top-circle" >
-            <circle cx="0" cy="0"  r="180"/>
+        <svg id="top-circle">
+            <circle cx="0" cy="0" r="180" />
         </svg>
     </div>
     <div id="date" class="date"></div>
@@ -177,7 +177,7 @@
     </button>
     <nav id="todo-bar">
 
-        <button class="btn close" id="closeTodo">&#10060</button>
+        <button class="btn close" id="closeTodo">&#10060;</button>
         <div class="tabs-container" id="tabsContainer">
             <select id="pageSelector">
                 <option value="Todos">Todos</option>
@@ -185,15 +185,22 @@
                 <option value="checklist">checklist</option>
                 <option value="cravings">cravings</option>
             </select>
-            <button class="btn" id="modifyPageBtn">&vellip;</button>
+            <button class="btn" id="modifyPageBtn" onclick="getEle('modifyPopupBackground').style.display='flex'">&vellip;</button>
+            <div class="modal" id="modifyPopupBackground">
+                <div class="modal-content">
+                    <span class="pageName">Todos</span>
+                    <span class="pageName">Carvings</span>
+                    <span class="pageName">Ideas</span>
+                </div>
+            </div>
         </div>
         <div class="todo-container" id="todos">
             <!-- this one willl contain the todos from -->
         </div>
-        <div id="addTodoContainer" class="todo-div">
+        <form id="addTodoContainer" class="todo-div">
             <input type="text" id="newTodo">
-            <button id="addTodo" class="btn add" type="reset">&#10010</button>
-        </div>
+            <input id="addTodo" class="btn add" type="submit" value="&plus; Add Todo" />
+        </form>
 
     </nav>
 
