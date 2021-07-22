@@ -298,7 +298,7 @@ select#pageSelector {
 .modal-content {
   z-index: 10;
   background-color: var(--modal-color);
-  margin: 10% auto;
+  margin: 20% auto;
   padding: 20px;
   border: 1px solid #6974c9;
   border-radius: 10px;
@@ -306,6 +306,9 @@ select#pageSelector {
   color: black;
   position: relative;
   overflow: auto;
+}
+.modal-content > h2 {
+  position: sticky;
 }
 .add-page {
   position: absolute;
@@ -323,6 +326,10 @@ select#pageSelector {
 }
 .pageName > span {
   flex: 1;
+  color: black;
+}
+.pageName.active {
+  background-color: #6974c9;
 }
 @keyframes move-Hand {
   0% {

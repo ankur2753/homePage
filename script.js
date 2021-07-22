@@ -1,4 +1,11 @@
-var deleteTodos, changeStatus;
+import {
+  openDB,
+  createList,
+  appendtoList,
+  deleteFromList,
+  updateList,
+  getListContent,
+} from "./todo.js";
 //trying to code this one using the functional pradigm
 
 function getEle(id) {
@@ -36,14 +43,6 @@ function updateDateTime(dateObj) {
     dateObj.getFullYear(),
   ].join("/")}`;
 }
-// display date time on page load
-updateDateTime(new Date());
-
-// update date&time evry minute
-setInterval(() => {
-  let date = new Date();
-  updateDateTime(date);
-}, 1000);
 
 function switchTheme(e) {
   if (e.target.checked) {
@@ -58,26 +57,22 @@ function changeTheme(themeString) {
   document.documentElement.setAttribute("data-theme", themeString);
 }
 
-// for darkmode toggle class on click
-
-getEle("checkbox").addEventListener("change", switchTheme);
-// check local storage for last theme
-function themeing() {
-  let lastTheme = localStorage.getItem("theme");
-  if (!lastTheme) return;
-  changeTheme(lastTheme);
-  if (lastTheme == "dark") {
-    getEle("checkbox").checked = true;
-  }
-}
-themeing();
-// ************************************************//
+// **********************************************************************************//
 
 // clears the content of todo-container
 function clearContent(id) {
   getEle(id).innerHTML = "";
 }
 
+function changeStatus(id) {
+  updateList(getSelectedPageName(), id);
+  toggleclass(getEle(id), "done");
+  changePage();
+}
+function deleteListItem(id) {
+  deleteFromList(getSelectedPageName(), id);
+  getEle(id).style.display = "none";
+}
 // creates a div with formating to
 function createDivForTodo(completion, todoStr, id) {
   let div = document.createElement("div");
@@ -93,16 +88,15 @@ function createDivForTodo(completion, todoStr, id) {
 function divContent(todoStr) {
   return `<div class="string">${todoStr}</div>
               <div class="actions">
-               <button class="btn"  onclick="changeStatus(this.parentElement.parentElement.id)">
+              <button class="btn" name="checkButton" >
                &check;
                </button>
-               <button class="btn delete"  onclick='deleteTodos(this.parentElement.parentElement.id)'>
+               <button class="btn delete" name="deleteButton">
                &#128465;
                </button>
               </div>
               `;
 }
-
 function displayEle(where, ele) {
   getEle(where).append(ele);
 }
@@ -116,12 +110,21 @@ function toggleModal() {
   } else {
     getEle("modifyPopupBackground").style.display = "flex";
   }
+  getEle("lists")
+    .querySelectorAll("div")
+    .forEach((div) =>
+      div.addEventListener("click", (ev) => {
+        let selected = ev.target.lastChild.textContent;
+        let options = getEle("pageSelector").options;
+        for (const option of options) {
+          if (option.value == selected) {
+            option.selected = true;
+          }
+        }
+        refreshList();
+      })
+    );
 }
-
-getEle("modifyPopupBackground").addEventListener("click", (e) => {
-  // toggle modal on click outside the modal
-  e.target == getEle("modifyPopupBackground") ? toggleModal() : null;
-});
 function showOption(option) {
   let page = document.createElement("option");
   page.value = option;
@@ -131,10 +134,8 @@ function showOption(option) {
 function showList(option) {
   let list = document.createElement("div");
   list.classList.add("pageName");
-  if (option == getSelectedPageName()) {
-    list.classList.add("active");
-  }
   let name = document.createElement("span");
+  name.classList.add("btn");
   name.textContent = option;
   let deleteButton = document.createElement("button");
   deleteButton.classList.add("close", "btn");
@@ -142,92 +143,123 @@ function showList(option) {
   displayEle("lists", list);
   list.append(name, deleteButton);
 }
-// ***********************************************//
+function refreshList() {
+  // remove active class from previous element to new element
+  getEle("lists")
+    .querySelectorAll("span")
+    .forEach((listName) => {
+      listName.textContent == getSelectedPageName()
+        ? listName.parentElement.classList.add("active")
+        : listName.parentElement.classList.remove("active");
+    });
+}
+async function changePage() {
+  clearContent("todos");
+  let listContents = await getListContent(getSelectedPageName());
+  listContents.forEach(({ name, completed, id }) => {
+    displayEle("todos", createDivForTodo(completed, name, id));
+  });
+  // add delete and check status function to onclick events
+  document.querySelectorAll("button[name='checkButton']").forEach((btn) =>
+    btn.addEventListener("click", (ele) => {
+      changeStatus(ele.target.parentElement.parentElement.id);
+    })
+  );
+  document.querySelectorAll("button[name='deleteButton']").forEach((btn) =>
+    btn.addEventListener("click", (ele) => {
+      deleteListItem(ele.target.parentElement.parentElement.id);
+    })
+  );
+  refreshList();
+}
+// ******************************************************************************************************//
+themeing();
+// display date time on page load
+updateDateTime(new Date());
 
-import("./todo.js")
-  .then(
-    ({
-      getPage,
-      addTodo,
-      deleteTodo,
-      toggleCompletionStatus,
-      newPage,
-      objStores,
-    }) => {
-      objStores.forEach((objStore) => {
-        showOption(objStore);
-        showList(objStore);
-      });
-      deleteTodos = (id) => {
-        deleteTodo(id, getSelectedPageName());
-        changePage();
-      };
-      changeStatus = (id) => {
-        toggleCompletionStatus(id, getSelectedPageName());
-        toggleclass(getEle(id), "done");
-        changePage();
-      };
-      async function changePage() {
-        clearContent("todos");
-        let x = await getPage(getSelectedPageName());
-        x.forEach(({ name, completed, id }) => {
-          displayEle("todos", createDivForTodo(completed, name, id));
-        });
-      }
-      // enable and disable nav bar on click
-      getEle("todo").addEventListener("click", () => {
-        toggleclass(getEle("todo-bar"), "active");
-        changePage();
-      });
-      getEle("closeTodo").addEventListener("click", () => {
-        toggleclass(getEle("todo-bar"), "active");
-      });
+// update date&time evry minute
+setInterval(() => {
+  let date = new Date();
+  updateDateTime(date);
+}, 1000);
+// for darkmode toggle class on click
 
-      // add todos on click
-      getEle("addTodoContainer").addEventListener("submit", (e) => {
-        e.preventDefault();
-        try {
-          let text = getEle("newTodo").value;
-          if (text.length > 0) {
-            addTodo(getSelectedPageName(), text);
-            changePage();
-          }
-          getEle("newTodo").value = "";
-        } catch (error) {
-          alert(`opps something went wrong  ${error}`);
-        }
-      });
+getEle("checkbox").addEventListener("change", switchTheme);
+// check local storage for last theme
+function themeing() {
+  let lastTheme = localStorage.getItem("theme");
+  if (!lastTheme) return;
+  changeTheme(lastTheme);
+  if (lastTheme == "dark") {
+    getEle("checkbox").checked = true;
+  }
+}
+openDB("Storage").then((db) => {
+  let pageNames = db.objectStoreNames;
+  for (const page of pageNames) {
+    showOption(page);
+    showList(page);
+  }
+  db.close();
+});
+// modal popup control
+getEle("modifyPageBtn").addEventListener("click", toggleModal);
+getEle("modifyPopupBackground").addEventListener("click", (e) => {
+  // toggle modal on click outside the modal
+  e.target == getEle("modifyPopupBackground") ? toggleModal() : null;
+  // handle click on list names
+});
 
-      //for the select dropdown set onchange function
-      getEle("pageSelector").onchange = changePage;
-
-      // for the add new page button
-      getEle("addPage").addEventListener("click", () => {
-        //create text input if left blank delete the input field
-        let outerDiv = document.createElement("div");
-        let form = document.createElement("form");
-        let inp = document.createElement("input");
-        outerDiv.classList.add("pageName");
-        inp.style.width = "90%";
-        form.style.width = "100%";
-        form.style.margin = "auto";
-        inp.setAttribute("type", "text");
-        inp.setAttribute("placeholder", "press enter to submit");
-        form.appendChild(inp);
-        outerDiv.append(form);
-        displayEle("lists", outerDiv);
-        inp.focus();
-        form.onsubmit = (e) => {
-          if (inp.value.length > 0) {
-            e.preventDefault();
-            newPage(inp.value);
-            showList(inp.value);
-            showOption(inp.value);
-            outerDiv.remove();
-          } else outerDiv.remove();
-        };
-      });
+// enable and disable nav bar on click
+getEle("todo").addEventListener("click", async () => {
+  toggleclass(getEle("todo-bar"), "active");
+  changePage();
+});
+getEle("closeTodo").addEventListener("click", () => {
+  toggleclass(getEle("todo-bar"), "active");
+});
+// add todos on click
+getEle("addTodoContainer").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    let text = getEle("newTodo").value;
+    if (text.length > 0) {
+      appendtoList(getSelectedPageName(), text);
+      changePage();
     }
-  )
-  .catch(console.error);
+    getEle("newTodo").value = "";
+  } catch (error) {
+    alert(`opps something went wrong  ${error}`);
+  }
+});
+
+//   //for the select dropdown set onchange function
+getEle("pageSelector").onchange = changePage;
+
+// for the add new page button
+getEle("addPage").addEventListener("click", () => {
+  //create text input if left blank delete the input field
+  let outerDiv = document.createElement("div");
+  let form = document.createElement("form");
+  let inp = document.createElement("input");
+  outerDiv.classList.add("pageName");
+  inp.style.width = "90%";
+  form.style.width = "100%";
+  form.style.margin = "auto";
+  inp.setAttribute("type", "text");
+  inp.setAttribute("placeholder", "press enter to submit");
+  form.appendChild(inp);
+  outerDiv.append(form);
+  displayEle("lists", outerDiv);
+  inp.focus();
+  form.onsubmit = async (e) => {
+    if (inp.value.length > 0) {
+      e.preventDefault();
+      showList(inp.value);
+      showOption(inp.value);
+      await createList("Storage", inp.value);
+      outerDiv.remove();
+    } else outerDiv.remove();
+  };
+});
 indexedDB.deleteDatabase("Storage");
