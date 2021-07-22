@@ -1,4 +1,4 @@
-var deleteTodos, changeStatus, currentObjStore;
+var deleteTodos, changeStatus;
 //trying to code this one using the functional pradigm
 
 function getEle(id) {
@@ -74,8 +74,8 @@ themeing();
 // ************************************************//
 
 // clears the content of todo-container
-function clearDivs() {
-  getEle("todos").innerHTML = "";
+function clearContent(id) {
+  getEle(id).innerHTML = "";
 }
 
 // creates a div with formating to
@@ -103,43 +103,76 @@ function divContent(todoStr) {
               `;
 }
 
-function displayDiv(div) {
-  getEle("todos").appendChild(div);
+function displayEle(where, ele) {
+  getEle(where).append(ele);
 }
-function getSelectedPageIndex() {
-  return getEle("pageSelector").selectedIndex;
+function getSelectedPageName() {
+  return getEle("pageSelector").options[getEle("pageSelector").selectedIndex]
+    .value;
 }
 function toggleModal() {
-  if (getEle('modifyPopupBackground').style.display =='flex') {
-    getEle('modifyPopupBackground').style.display="none";
+  if (getEle("modifyPopupBackground").style.display == "flex") {
+    getEle("modifyPopupBackground").style.display = "none";
   } else {
-    getEle('modifyPopupBackground').style.display='flex';
+    getEle("modifyPopupBackground").style.display = "flex";
   }
 }
 
-getEle("modifyPopupBackground").addEventListener("click",toggleModal)
+getEle("modifyPopupBackground").addEventListener("click", (e) => {
+  // toggle modal on click outside the modal
+  e.target == getEle("modifyPopupBackground") ? toggleModal() : null;
+});
+function showOption(option) {
+  let page = document.createElement("option");
+  page.value = option;
+  page.text = option;
+  displayEle("pageSelector", page);
+}
+function showList(option) {
+  let list = document.createElement("div");
+  list.classList.add("pageName");
+  if (option == getSelectedPageName()) {
+    list.classList.add("active");
+  }
+  let name = document.createElement("span");
+  name.textContent = option;
+  let deleteButton = document.createElement("button");
+  deleteButton.classList.add("close", "btn");
+  deleteButton.innerHTML = "&#9932;";
+  displayEle("lists", list);
+  list.append(name, deleteButton);
+}
 // ***********************************************//
 
 import("./todo.js")
   .then(
-    ({ getPage, addTodo, deleteTodo, toggleCompletionStatus, objStores }) => {
+    ({
+      getPage,
+      addTodo,
+      deleteTodo,
+      toggleCompletionStatus,
+      newPage,
+      objStores,
+    }) => {
+      objStores.forEach((objStore) => {
+        showOption(objStore);
+        showList(objStore);
+      });
       deleteTodos = (id) => {
-        deleteTodo(id, currentObjStore);
+        deleteTodo(id, getSelectedPageName());
         changePage();
       };
       changeStatus = (id) => {
-        toggleCompletionStatus(id, currentObjStore);
-        console.log(getEle(id).childNodes);
+        toggleCompletionStatus(id, getSelectedPageName());
         toggleclass(getEle(id), "done");
         changePage();
       };
-      function changePage() {
-        clearDivs();
-        currentObjStore = objStores[getSelectedPageIndex()];
-        let x =getPage(currentObjStore);
-        for (const iterator of x) {
-          console.log(iterator);
-        }
+      async function changePage() {
+        clearContent("todos");
+        let x = await getPage(getSelectedPageName());
+        x.forEach(({ name, completed, id }) => {
+          displayEle("todos", createDivForTodo(completed, name, id));
+        });
       }
       // enable and disable nav bar on click
       getEle("todo").addEventListener("click", () => {
@@ -151,12 +184,12 @@ import("./todo.js")
       });
 
       // add todos on click
-      getEle("addTodoContainer").addEventListener("submit", e => {
+      getEle("addTodoContainer").addEventListener("submit", (e) => {
         e.preventDefault();
         try {
           let text = getEle("newTodo").value;
           if (text.length > 0) {
-            addTodo(currentObjStore, text);
+            addTodo(getSelectedPageName(), text);
             changePage();
           }
           getEle("newTodo").value = "";
@@ -165,9 +198,36 @@ import("./todo.js")
         }
       });
 
+      //for the select dropdown set onchange function
       getEle("pageSelector").onchange = changePage;
+
+      // for the add new page button
+      getEle("addPage").addEventListener("click", () => {
+        //create text input if left blank delete the input field
+        let outerDiv = document.createElement("div");
+        let form = document.createElement("form");
+        let inp = document.createElement("input");
+        outerDiv.classList.add("pageName");
+        inp.style.width = "90%";
+        form.style.width = "100%";
+        form.style.margin = "auto";
+        inp.setAttribute("type", "text");
+        inp.setAttribute("placeholder", "press enter to submit");
+        form.appendChild(inp);
+        outerDiv.append(form);
+        displayEle("lists", outerDiv);
+        inp.focus();
+        form.onsubmit = (e) => {
+          if (inp.value.length > 0) {
+            e.preventDefault();
+            newPage(inp.value);
+            showList(inp.value);
+            showOption(inp.value);
+            outerDiv.remove();
+          } else outerDiv.remove();
+        };
+      });
     }
   )
-  .catch((error) => {
-    console.error(error);
-  });
+  .catch(console.error);
+indexedDB.deleteDatabase("Storage");

@@ -7,12 +7,12 @@
   --background: #d6fff9;
   --nav-background: #36827f;
   --neutral-color: rgb(240, 135, 0);
-  --nav-width: 25vw;
+  --nav-width: 30vw;
   --blob-color: rgb(240, 120, 90);
-  --modal-color:#969ED9;
+  --modal-color: #969ed9;
 }
 [data-theme="dark"] {
---font: rgb(250, 235, 215);
+  --font: rgb(250, 235, 215);
   --background: #121212;
   --nav-background: #14213d;
 }
@@ -53,7 +53,7 @@ em {
 
 .slider:before {
   background-color: #fff;
-  bottom: 4px;  
+  bottom: 4px;
   content: "";
   height: 26px;
   left: 4px;
@@ -87,7 +87,7 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  transition-property: background-color ,color;
+  transition-property: background-color, color;
   transition-duration: 1s;
   color: var(--font);
   background-color: var(--background);
@@ -168,36 +168,29 @@ nav {
   background-color: var(--nav-background);
   color: currentColor;
   width: var(--nav-width);
-  right: calc(var(--nav-width)*-1);
+  right: calc(var(--nav-width) * -1);
   transform: translateX(var(--nav-width));
   transition: all 1s ease-out;
   padding: 0;
 }
 
 nav.active {
-  transform: translateX(calc(var(--nav-width)*-1));
+  transform: translateX(calc(var(--nav-width) * -1));
 }
 
 .close {
-  margin: 10px;
   width: min-content;
   display: block;
-  border-radius: 10px;
+  border-radius: 0;
   padding: 5px;
+  color: red;
+}
+.close:hover {
+  background-color: red;
+  color: white;
 }
 
-
-.add {
-  background-color: var(--neutral-color);
-  color: var(--font);
-  margin: 10px;
-  font-size: medium;
-}
-
-.add::after {
-  content: " Add Todo";
-}
-.delete::after{
+.delete::after {
   content: "delete";
 }
 
@@ -211,20 +204,29 @@ nav.active {
   outline: none;
 }
 
-.todo-div {
+form.add-todo {
   display: flex;
-  flex-direction: column;
   position: absolute;
   bottom: 10px;
-  width: 80%;
-  margin: 10px;
-  justify-content: center;
+  margin: 20px 5px;
   width: 95%;
 }
-.tabs-container{
+form > input[type="text"] {
+  padding: 0;
+  margin: 5px;
+  flex: 1;
+}
+.add {
+  background-color: var(--neutral-color);
+  color: var(--font);
+  margin: 10px;
+  font-size: medium;
+}
+
+.tabs-container {
   display: flex;
 }
-select#pageSelector{
+select#pageSelector {
   width: 80%;
   appearance: none;
   margin: 5%;
@@ -252,10 +254,10 @@ select#pageSelector{
   align-items: center;
   align-content: center;
   margin: 0;
-  border-bottom:1px solid;
+  border-bottom: 1px solid;
 }
 
-.todo-content.done .string{
+.todo-content.done .string {
   text-decoration: line-through;
   color: var(--blob-color);
 }
@@ -268,7 +270,7 @@ select#pageSelector{
   margin: 0;
   padding: 0;
 }
-.string{
+.string {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -282,31 +284,45 @@ select#pageSelector{
 }
 
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  display: none;
+  position: fixed;
+  z-index: 1;
   left: 0;
   top: 0;
-  width: var(--nav-width); /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: var(--nav-width);
+  height: 100%;
+  overflow: auto;
+  color: black;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 .modal-content {
   z-index: 10;
   background-color: var(--modal-color);
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 10% auto;
   padding: 20px;
-  border: 3px solid #6974C9;
+  border: 1px solid #6974c9;
   border-radius: 10px;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 80%;
   color: black;
+  position: relative;
+  overflow: auto;
 }
-.modal-content>span{
-  display: block;
-  margin: 10px;
-  border-bottom: 1px solid black;
+.add-page {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  color: black;
+  border: 1px solid #6974c9;
+  background-color: #6974c9;
+}
+.pageName {
+  display: flex;
+  border: 1px solid #6974c9;
+  margin: 2px;
+  padding: 10px;
+}
+.pageName > span {
+  flex: 1;
 }
 @keyframes move-Hand {
   0% {
@@ -320,14 +336,16 @@ select#pageSelector{
   }
 }
 @media only screen and (max-width: 700px) {
-  
   nav {
---nav-width:100vw;
+    --nav-width: 100vw;
   }
   .background-desktop {
     display: none;
   }
-
+  .close {
+    background-color: red;
+    color: white;
+  }
   .background-mobile {
     display: flex;
     position: relative;

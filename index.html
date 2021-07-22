@@ -173,33 +173,34 @@
     </div>
 
     <button id="todo" class="btn todo-btn">
-        <h3>TODOs</h3>
+        <h3>INVENTORY</h3>
     </button>
     <nav id="todo-bar">
 
-        <button class="btn close" id="closeTodo">&#10060;</button>
+        <button class="btn close" id="closeTodo">&#9932;</button>
         <div class="tabs-container" id="tabsContainer">
             <select id="pageSelector">
-                <option value="Todos">Todos</option>
-                <option value="Ideas">Ideas</option>
-                <option value="checklist">checklist</option>
-                <option value="cravings">cravings</option>
+                <!-- diffrent page Lists goes here -->
             </select>
             <button class="btn" id="modifyPageBtn" onclick="toggleModal()">&vellip;</button>
             <div class="modal" id="modifyPopupBackground">
                 <div class="modal-content">
-                    <span class="pageName">Todos</span>
-                    <span class="pageName">Carvings</span>
-                    <span class="pageName">Ideas</span>
+                    <h2>Lists
+                    </h2>
+                    <button class="btn add-page" id="addPage">&plus; New List</button>
+                    <div class="lists" id="lists">
+                        <!-- diffrent page Lists goes here -->
+
+                    </div>
                 </div>
             </div>
         </div>
         <div class="todo-container" id="todos">
             <!-- this one willl contain the todos from -->
         </div>
-        <form id="addTodoContainer" class="todo-div" onsubmit="function handleForm(event) { event.preventDefault(); }">
-            <input type="text" id="newTodo">
-            <input  class="btn add" type="submit" value="&plus; Add Todo" />
+        <form id="addTodoContainer" class="add-todo">
+            <input type="text" id="newTodo" placeholder="start typing here..." autocomplete="off" />
+            <input class="btn add" type="submit" value="&plus;" />
         </form>
 
     </nav>

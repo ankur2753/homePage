@@ -1,12 +1,11 @@
-
 var db;
 var objStores = ["Todos", "Ideas", "checklist", "cravings"];
 var objectType = {
   autoIncrement: true,
   keyPath: "id",
 };
-function requestErr(err){
-  console.error(`error in request is : +${err}`);
+function requestErr(err) {
+  console.error(`error in request is :  ${err.target.error}`);
 }
 // check local storage at the start to prevent errors if not present set
 
@@ -16,55 +15,44 @@ function openTransaction(objectStore) {
 
 // get items and split it to make an array
 function getPage(objectStore) {
-  let res =[];
-  let objStore = openTransaction(objectStore);
-  let request = objStore.openCursor();
-  request.onsuccess = (e) => {
-    let cursor = e.target.result;
-    if (cursor) {
-      let { completed, name } = cursor.value;
-      let id = `${cursor.source.name} ${cursor.key}`
-      res.push({completed,name,id})
-// function for getting all the todos and then displaying it in the dom
-      displayDiv(createDivForTodo(completed,name,id))
-      cursor.continue();
-    }
-  };
-  request.onerror = requestErr; 
-  return res;
+  return new Promise((resolve, reject) => {
+    let res = [];
+    let objStore = openTransaction(objectStore);
+    let request = objStore.getAll();
+    request.onerror = (e) => reject(e.target.error);
+    request.onsuccess = (e) => {
+      res = request.result.map(({ name, completed, id }) => {
+        id = `${request.source.name} ${id}`;
+        return { name, completed, id };
+      });
+      resolve(res);
+    };
+  });
 }
 
-// funtion to save todos to local storage
+// funtion to save todos
 function setItem(objectStore, todoStr) {
   let objStore = openTransaction(objectStore);
   let req = objStore.add({
     completed: false,
     name: todoStr,
   });
-  req.onsuccess = (e) => console.log;
-  req.onerror = requestErr; 
+  req.onerror = requestErr;
 }
 
 // to manage deletion and completion status we need id -->
-
-// take the last elemnt in todo list and take it's id add 2 to create a new id
-
-// from the array inject todos to html
-
-
-
+// element id = objectStoreName + id(genrated from IDB)
 
 // for deleting todos ->  remove element from html and local storage
-function deleteTodo(id,objectStore) {
+function deleteTodo(id, objectStore) {
   let key = parseInt(id.split(" ")[1]);
   let objStore = openTransaction(objectStore);
   let request = objStore.delete(key);
-  request.onerror = requestErr; 
-  return true;
+  request.onerror = requestErr;
 }
 
-// for marking done -> add line-through and move to completed in local storage
-function toggleCompletionStatus(id,objectStore) {
+// for marking done -> add line-through and upadate in DB
+function toggleCompletionStatus(id, objectStore) {
   let key = parseInt(id.split(" ")[1]);
   let objStore = openTransaction(objectStore);
   let request = objStore.get(key);
@@ -73,37 +61,70 @@ function toggleCompletionStatus(id,objectStore) {
     value.completed = !value.completed;
     objStore.put(value);
   };
-  request.onerror = requestErr; 
+  request.onerror = requestErr;
 }
 
-createDB("Storage", ...objStores);
+createDB("Storage");
+
+function getCurrentDBversion(name) {
+  return new Promise((resolve, reject) => {
+    let version;
+    let req = indexedDB.open(name);
+    req.onsuccess = () => resolve(req.result.version);
+    req.onerror = () => reject(req.error);
+  });
+}
 
 // indexDB stuff
-async function createDB(name, ...objectStores) {
-  let res;
-  let request = indexedDB.open(name);
-  request.onsuccess = async() => {
+async function createDB(name, objectStoreName) {
+  let request;
+  if (objectStoreName !== "" && typeof objectStoreName !== "undefined") {
+    let nextVersion = await getCurrentDBversion(name);
+    nextVersion++;
+    request = indexedDB.open(name, nextVersion);
+  } else {
+    request = indexedDB.open(name);
+  }
+
+  request.onsuccess = async () => {
+    console.groupCollapsed("SUCCESS");
+    console.dir(request);
     db = request.result;
     objStores = db.objectStoreNames;
-    if (objectStores.length > 0) {
-      // open a new version to start the on upgrade needed function
-      let currVersion = db.version;
-      request = indexedDB.open(name, ++currVersion);
-    }
+    console.trace();
+    console.dir(objStores);
+    console.groupEnd();
   };
-  request.onerror = requestErr; (err) => console.error;
+  request.onerror = requestErr;
   request.onupgradeneeded = async (e) => {
+    console.group("UPGRADE");
     db = await e.target.result;
-    // for the first time add todos automatically
-    console.table({oldVersion:e.oldVersion,newVersion:e.newVersion})
-    if (e.oldVersion < 1) {
-      objectStores.forEach((objStore) => {
+    // for a new version create new lists automatially
+    if (e.oldVersion == 0) {
+      ["Todos", "Ideas", "checklist", "cravings"].forEach((objStore) => {
         db.createObjectStore(objStore, objectType).add({
           completed: false,
           name: `this is an example of ${objStore}`,
         });
       });
     }
+    //if other objectStoreNames are provided create an objectStore
+    if (objectStoreName !== "" && typeof objectStoreName !== "undefined") {
+      console.log(objectStoreName);
+      db.createObjectStore(objectStoreName, objectType).add({
+        completed: false,
+        name: `this is an example of ${objectStoreName}`,
+      });
+    }
+    objStores = db.objectStoreNames;
+    console.table({
+      origin: "upgrade",
+      oldVersion: e.oldVersion,
+      newVersion: e.newVersion,
+    });
+    console.trace();
+    console.dir(objStores);
+    console.groupEnd();
   };
 }
 
@@ -112,5 +133,11 @@ function addObjStore(objStore) {
   createDB("Storage", objStore);
 }
 
-
-export {setItem as addTodo,deleteTodo,toggleCompletionStatus,getPage,objStores}
+export {
+  setItem as addTodo,
+  deleteTodo,
+  toggleCompletionStatus,
+  getPage,
+  addObjStore as newPage,
+  objStores,
+};
