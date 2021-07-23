@@ -8,6 +8,9 @@ async function openTransaction(objectStore) {
   let db = await openDB("Storage");
   let tx = db.transaction(objectStore, "readwrite");
   tx.onerror = console.error;
+  tx.oncomplete = (res) => {
+    res.target.db.close();
+  };
   return tx.objectStore(objectStore);
 }
 
@@ -62,14 +65,27 @@ async function updateList(listName, key) {
 function getCurrentDBversion(name) {
   return new Promise((resolve, reject) => {
     let req = indexedDB.open(name);
-    req.onsuccess = () => resolve(req.result.version);
+    req.onsuccess = () => {
+      resolve(req.result.version);
+      req.result.close();
+    };
     req.onerror = () => reject(req.error);
   });
 }
-
+async function openRequest(dbName, objectStoreName) {
+  let request;
+  if (objectStoreName !== "" && typeof objectStoreName !== "undefined") {
+    let nextVersion = await getCurrentDBversion(dbName);
+    nextVersion++;
+    request = indexedDB.open(dbName, nextVersion);
+  } else {
+    request = indexedDB.open(dbName);
+  }
+  return request;
+}
 // create an indexDB with the given name
-function openDB(dbName) {
-  let request = indexedDB.open(dbName);
+async function openDB(dbName) {
+  let request = await openRequest(dbName);
   request.addEventListener("upgradeneeded", (e) => {
     // NOTE:- this should be abstracted later for better reuseablity
     // for a new version create default lists automatially
@@ -94,14 +110,7 @@ function openDB(dbName) {
 }
 
 async function createList(dbName, objectStoreName) {
-  let request;
-  if (objectStoreName !== "" && typeof objectStoreName !== "undefined") {
-    let nextVersion = await getCurrentDBversion(dbName);
-    nextVersion++;
-    request = indexedDB.open(dbName, nextVersion);
-  } else {
-    request = indexedDB.open(dbName);
-  }
+  let request = await openRequest(dbName, objectStoreName);
   request.onupgradeneeded = async (e) => {
     let db = await e.target.result;
     //if other objectStoreNames are provided create an objectStore
@@ -115,10 +124,26 @@ async function createList(dbName, objectStoreName) {
     }
   };
   return new Promise((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      resolve(request.result);
+      request.result.close();
+    };
     request.onerror = (err) => {
       reject(`Some Error in request : \n ${err.target.error}`);
     };
+  });
+}
+async function deleteList(dbName, objectStoreName) {
+  let request = await openRequest(dbName, objectStoreName);
+  return new Promise((resolve, reject) => {
+    request.onupgradeneeded = async (e) => {
+      let db = await e.target.result;
+      db.deleteObjectStore(objectStoreName);
+    };
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+    request.onblocked = request.onerror = () => reject(request);
   });
 }
 export {
@@ -128,4 +153,5 @@ export {
   deleteFromList,
   updateList,
   getListContent,
+  deleteList,
 };

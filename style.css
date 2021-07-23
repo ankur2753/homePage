@@ -99,7 +99,7 @@ body {
   z-index: -60;
   display: flex;
   justify-content: end;
-  right: 4vw;
+  right: 6vw;
   bottom: 0;
 }
 .background-mobile {
@@ -235,7 +235,7 @@ select#pageSelector {
 
 .todo-container {
   background-color: transparent;
-  overflow: auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -246,14 +246,12 @@ select#pageSelector {
 .todo-content {
   display: flex;
   background-color: transparent;
-  /* margin: 25px; */
   text-overflow: ellipsis;
-  overflow: hidden;
   font-size: larger;
   justify-content: center;
   align-items: center;
   align-content: center;
-  margin: 0;
+  margin: 2px;
   border-bottom: 1px solid;
 }
 
@@ -298,7 +296,7 @@ select#pageSelector {
 .modal-content {
   z-index: 10;
   background-color: var(--modal-color);
-  margin: 20% auto;
+  margin: 35% auto;
   padding: 20px;
   border: 1px solid #6974c9;
   border-radius: 10px;
@@ -342,7 +340,10 @@ select#pageSelector {
     transform: rotateZ(0deg);
   }
 }
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 750px) {
+  .modal-content {
+    margin: auto;
+  }
   nav {
     --nav-width: 100vw;
   }

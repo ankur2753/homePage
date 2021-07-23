@@ -1,6 +1,7 @@
 import {
   openDB,
   createList,
+  deleteList,
   appendtoList,
   deleteFromList,
   updateList,
@@ -105,25 +106,45 @@ function getSelectedPageName() {
     .value;
 }
 function toggleModal() {
-  if (getEle("modifyPopupBackground").style.display == "flex") {
-    getEle("modifyPopupBackground").style.display = "none";
+  let modal = getEle("modifyPopupBackground");
+  if (modal.style.display == "flex") {
+    modal.style.display = "none";
   } else {
-    getEle("modifyPopupBackground").style.display = "flex";
+    modal.style.display = "flex";
   }
-  getEle("lists")
-    .querySelectorAll("div")
-    .forEach((div) =>
-      div.addEventListener("click", (ev) => {
-        let selected = ev.target.lastChild.textContent;
-        let options = getEle("pageSelector").options;
-        for (const option of options) {
-          if (option.value == selected) {
-            option.selected = true;
-          }
+  let list = getEle("lists");
+  // add event listner for click on div
+  list.querySelectorAll("div.pageName").forEach((div) =>
+    div.addEventListener("click", (ev) => {
+      let selected = ev.target.lastChild.textContent;
+      let options = getEle("pageSelector").options;
+      for (const option of options) {
+        if (option.value == selected) {
+          option.selected = true;
         }
-        refreshList();
-      })
-    );
+      }
+      refreshList();
+    })
+  );
+  // add event listner dor deleteButton
+  list.querySelectorAll(".close").forEach((btn) =>
+    btn.addEventListener("click", async (ev) => {
+      await deleteList("Storage", ev.target.previousSibling.textContent).then(
+        (db) => db.close()
+      );
+      ev.target.parentElement.style.display = "none";
+      await openDB("Storage").then((db) => {
+        clearContent("pageSelector");
+        let options = db.objectStoreNames;
+        for (const opt of options) {
+          showOption(opt);
+        }
+        db.close();
+      });
+    })
+  );
+
+  changePage();
 }
 function showOption(option) {
   let page = document.createElement("option");
@@ -154,17 +175,20 @@ function refreshList() {
     });
 }
 async function changePage() {
+  // clear the content of div#todos
   clearContent("todos");
+  // get content from the IDB
   let listContents = await getListContent(getSelectedPageName());
   listContents.forEach(({ name, completed, id }) => {
     displayEle("todos", createDivForTodo(completed, name, id));
   });
   // add delete and check status function to onclick events
-  document.querySelectorAll("button[name='checkButton']").forEach((btn) =>
+  document.querySelectorAll("button[name='checkButton']").forEach((btn) => {
     btn.addEventListener("click", (ele) => {
+      console.log(ele.target.parentElement.parentElement.id);
       changeStatus(ele.target.parentElement.parentElement.id);
-    })
-  );
+    });
+  });
   document.querySelectorAll("button[name='deleteButton']").forEach((btn) =>
     btn.addEventListener("click", (ele) => {
       deleteListItem(ele.target.parentElement.parentElement.id);
@@ -194,15 +218,21 @@ function themeing() {
     getEle("checkbox").checked = true;
   }
 }
-openDB("Storage").then((db) => {
-  let pageNames = db.objectStoreNames;
-  for (const page of pageNames) {
-    showOption(page);
-    showList(page);
-  }
-  db.close();
-});
-// modal popup control
+async function populateUI() {
+  await openDB("Storage").then((db) => {
+    [getEle("pageSelector"), getEle("lists")].forEach(
+      (continer) => (continer.innerHTML = "")
+    );
+    let pageNames = db.objectStoreNames;
+    for (const page of pageNames) {
+      showOption(page);
+      showList(page);
+    }
+    db.close();
+  });
+}
+populateUI();
+// modal popup control@
 getEle("modifyPageBtn").addEventListener("click", toggleModal);
 getEle("modifyPopupBackground").addEventListener("click", (e) => {
   // toggle modal on click outside the modal
@@ -255,11 +285,10 @@ getEle("addPage").addEventListener("click", () => {
   form.onsubmit = async (e) => {
     if (inp.value.length > 0) {
       e.preventDefault();
-      showList(inp.value);
       showOption(inp.value);
       await createList("Storage", inp.value);
+      showList(inp.value);
       outerDiv.remove();
     } else outerDiv.remove();
   };
 });
-indexedDB.deleteDatabase("Storage");
