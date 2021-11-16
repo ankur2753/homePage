@@ -3,7 +3,7 @@ var objectType = {
   autoIncrement: true,
   keyPath: "id",
 };
-
+// use genrator function to make it better
 async function openTransaction(objectStore) {
   let db = await openDB("Storage");
   let tx = db.transaction(objectStore, "readwrite");
@@ -21,10 +21,6 @@ async function getListContent(objectStore) {
   return new Promise((resolve, reject) => {
     request.onerror = (e) => reject(e.target.error);
     request.onsuccess = () => {
-      // let res = request.result.map(({ name, completed, id }) => {
-      //   id = `${request.source.name} ${id}`;
-      //   return { name, completed, id };
-      // });
       resolve(request.result);
     };
   });
@@ -39,9 +35,6 @@ async function appendtoList(listName, listContent) {
   });
   req.onerror = console.warn;
 }
-
-// to manage deletion and completion status we need id -->
-// element id = objectStoreName + id(genrated from IDB)
 
 // for deleting todos ->  remove element from html and local storage
 async function deleteFromList(listName, key) {

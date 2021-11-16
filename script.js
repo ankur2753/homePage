@@ -60,6 +60,8 @@ function changeTheme(themeString) {
 
 // **********************************************************************************//
 
+// to manage deletion and completion status we need id -->element id = objectStoreName + id(genrated from IDB)
+
 // clears the content of todo-container
 function clearContent(id) {
   getEle(id).innerHTML = "";
