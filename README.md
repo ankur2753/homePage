@@ -4,7 +4,7 @@
  - Theme Switcher
  - Also I've tried the functional paradigm in this project 😉
  - got  hands dirty  with some svg animation
- - no External resouces used if need can be used offline 
+ - can fetch quotes
 <h3> Possible Use Case </h3>
 
  - Use as homePage For Your Browser
