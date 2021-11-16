@@ -340,6 +340,13 @@ select#pageSelector {
     transform: rotateZ(0deg);
   }
 }
+blockquote {
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 @media only screen and (max-width: 750px) {
   .modal-content {
     margin: auto;
@@ -387,7 +394,7 @@ select#pageSelector {
   .date {
     font-size: 5vmin;
   }
-  .quote {
-    font-size: 4vmin;
+  .quotes {
+    font-size: 2vmin;
   }
 }

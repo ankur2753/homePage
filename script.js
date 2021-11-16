@@ -294,3 +294,21 @@ getEle("addPage").addEventListener("click", () => {
     } else outerDiv.remove();
   };
 });
+async function getIsults() {
+  const response = await fetch(
+    new Request("https://api.quotable.io/random?maxLength=80", {
+      method: "GET",
+      mode: "cors",
+    })
+  ).catch((err) => console.error("fetching err\n" + err));
+  return response.json();
+}
+function displayInsult(insult) {
+  if (insult != null) {
+    getEle("quotes").innerText = insult.content;
+    getEle("Author").innerText = "-- " + insult.author;
+  }
+}
+getIsults().then(console.dir);
+
+displayInsult(await getIsults());
